@@ -25,6 +25,12 @@ KEYWORDS = {
     "eq":         ["egaliseur", "equalizer", "musique", "spectre", "barres audio", "visualiseur"],
     "scope":      ["oscilloscope", "oscillo", "onde", "signal", "sinusoide"],
     "radar":      ["radar", "sonar", "balayage", "echo"],
+    "fireworks":  ["feu d artifice", "feux d artifice", "firework", "artifice", "petard"],
+    "fire":       ["flamme", "fire", "flame", "brasier", "incendie", "feu"],
+    "snow":       ["neige", "snow", "flocon", "hiver", "noel"],
+    "spiral":     ["spirale", "spiral", "hypnose", "hypnotique", "tourbillon", "vortex"],
+    "tunnel":     ["tunnel", "damier", "profondeur", "wormhole"],
+    "clock":      ["horloge", "heure", "clock", "montre", "chrono", "pendule"],
 }
 
 
@@ -43,10 +49,13 @@ def parse(description: str) -> dict:
     if m:
         out["text"] = m.group(1)
 
+    # on retient l'effet dont un mot-clé apparaît le plus tôt dans la phrase
+    # (« un feu qui monte » -> fire, pas slide), l'ordre du dict départageant.
+    best_pos = len(folded) + 1
     for effect, words in KEYWORDS.items():
-        if any(w in folded for w in words):
-            out["effect"] = effect
-            break
+        pos = min((folded.find(w) for w in words if w in folded), default=-1)
+        if pos != -1 and pos < best_pos:
+            best_pos, out["effect"] = pos, effect
 
     if any(w in folded for w in ("rapide", "vite", "fast", "quick")):
         out["fps"] = 25

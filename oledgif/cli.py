@@ -9,6 +9,7 @@ import sys
 from . import __version__
 from .describe import parse as parse_description
 from .effects import ALNUM, DESCRIPTIONS, EFFECTS, Ctx
+from .export import EXT, FORMATS, save_export
 from .fonts import load_font
 from .patterns import PATTERNS
 from .presets import DEFAULT_PRESET, PRESETS, resolve_size
@@ -49,7 +50,10 @@ def build_parser():
     p.add_argument("--no-denoise", action="store_true",
                    help="garde le bruit : désactive le filtre médian et la suppression "
                         "des pixels isolés (reflets, sources de lumière ponctuelles)")
-    p.add_argument("-o", "--out", default=None, help="fichier de sortie (.gif)")
+    p.add_argument("-o", "--out", default=None, help="fichier de sortie (.gif/.h/.xbm)")
+    p.add_argument("-f", "--format", default="gif", choices=sorted(FORMATS),
+                   help="gif (défaut) ; c-array = header C uint8_t[] PROGMEM pour "
+                        "Arduino/QMK (drawBitmap) ; xbm = X BitMap (1 frame)")
     p.add_argument("-p", "--preset", default=None,
                    help=f"écran cible (défaut: {DEFAULT_PRESET}) — voir --list-presets")
     p.add_argument("--size", default=None, metavar="WxH", help="taille custom, ex: 128x40")
@@ -65,6 +69,11 @@ def build_parser():
     p.add_argument("--invert", action="store_true", help="noir sur blanc")
     p.add_argument("--scale", type=int, default=1, help="agrandit le GIF xN (aperçu)")
     p.add_argument("--seed", type=int, default=None, help="graine aléatoire (rendu reproductible)")
+    p.add_argument("--push", action="store_true",
+                   help="envoie l'animation directement à l'écran OLED SteelSeries "
+                        "(GameSense) au lieu d'écrire un fichier ; Ctrl-C pour arrêter")
+    p.add_argument("--loops", type=int, default=0,
+                   help="nombre de boucles pour --push (0 = infini, défaut)")
     p.add_argument("--demo", action="store_true", help="génère un exemple de chaque effet dans ./samples")
     p.add_argument("--list-effects", action="store_true")
     p.add_argument("--list-presets", action="store_true")
@@ -72,42 +81,63 @@ def build_parser():
     return p
 
 
-def make_gif(text, out, *, preset=None, size=None, effect="auto", fps=15, seconds=4.0,
-             speed=None, font_path=None, font_size=None, charset=ALNUM,
-             invert=False, scale=1, seed=None, image=None, style="photo", fit="contain",
-             denoise=True):
+def build_frames(text, *, preset=None, size=None, effect="auto", fps=15, seconds=4.0,
+                 speed=None, font_path=None, font_size=None, charset=ALNUM,
+                 seed=None, image=None, style="photo", fit="contain", denoise=True):
+    """Construit les frames sans écrire : retourne (frames, durations, effect, W, H).
+
+    `durations` vaut None sauf pour la conversion d'un GIF animé source.
+    """
     W, H = resolve_size(preset, size)
     font = load_font(font_path, font_size, screen_h=H)
 
+    frames, durations = None, None
     src = None
     if image:
         im = Image.open(image)
         if getattr(im, "is_animated", False) and effect in ("auto", "convert"):
             # GIF animé -> conversion frame par frame, durées d'origine conservées
             frames, durations = convert_animation(image, W, H, style, fit, denoise)
-            n, duration = save_gif(frames, out, fps=fps, invert=invert,
-                                   scale=scale, durations=durations)
-            return out, "convert", W, H, n, duration
-        im.close()
-        src = load_source(image, W, H, style, fit, denoise)
-        if effect in ("auto", "convert"):
-            effect = "vhs"
+            effect = "convert"
+        else:
+            im.close()
+            src = load_source(image, W, H, style, fit, denoise)
+            if effect in ("auto", "convert"):
+                effect = "vhs"
 
-    if effect == "auto":
-        try:
-            wide = font.getlength(text) > W - 4
-        except AttributeError:
-            wide = len(text) * 7 > W - 4
-        effect = "scroll" if wide else "wave"
-    if effect not in EFFECTS:
-        raise SystemExit(f"Effet inconnu: {effect!r}. Effets: {', '.join(EFFECTS)}")
+    if frames is None:
+        if effect == "auto":
+            try:
+                wide = font.getlength(text) > W - 4
+            except AttributeError:
+                wide = len(text) * 7 > W - 4
+            effect = "scroll" if wide else "wave"
+        if effect not in EFFECTS:
+            raise SystemExit(f"Effet inconnu: {effect!r}. Effets: {', '.join(EFFECTS)}")
+        ctx = Ctx(text=text or "", W=W, H=H, fps=fps, seconds=seconds, font=font,
+                  font_path=font_path, font_size=font_size, charset=charset,
+                  speed=speed, src=src, rng=random.Random(seed))
+        frames = EFFECTS[effect](ctx)
+    return frames, durations, effect, W, H
 
-    ctx = Ctx(text=text or "", W=W, H=H, fps=fps, seconds=seconds, font=font,
-              font_path=font_path, font_size=font_size, charset=charset,
-              speed=speed, src=src, rng=random.Random(seed))
-    frames = EFFECTS[effect](ctx)
-    n, duration = save_gif(frames, out, fps=fps, invert=invert, scale=scale)
-    return out, effect, W, H, n, duration
+
+def make_gif(text, out, *, preset=None, size=None, effect="auto", fps=15, seconds=4.0,
+             speed=None, font_path=None, font_size=None, charset=ALNUM,
+             invert=False, scale=1, seed=None, image=None, style="photo", fit="contain",
+             denoise=True, fmt="gif"):
+    frames, durations, effect, W, H = build_frames(
+        text, preset=preset, size=size, effect=effect, fps=fps, seconds=seconds,
+        speed=speed, font_path=font_path, font_size=font_size, charset=charset,
+        seed=seed, image=image, style=style, fit=fit, denoise=denoise)
+
+    if fmt == "gif":
+        n, duration = save_gif(frames, out, fps=fps, invert=invert,
+                               scale=scale, durations=durations)
+        return out, effect, W, H, n, duration
+
+    dur = durations if durations else max(20, int(round(1000 / fps)))
+    _, n = save_export(frames, out, fmt, W, H, dur, invert=invert)
+    return out, effect, W, H, n, (dur[0] if isinstance(dur, list) else dur)
 
 
 def main(argv=None):
@@ -153,22 +183,46 @@ def main(argv=None):
               file=sys.stderr)
         return 2
 
+    if args.push:
+        from .push import PushError, push_animation
+        frames, durations, effect, W, H = build_frames(
+            text, preset=args.preset, size=args.size, effect=effect, fps=fps,
+            seconds=seconds, speed=args.speed, font_path=args.font,
+            font_size=args.font_size, charset=charset, seed=args.seed,
+            image=args.image, style="solid" if args.no_dither else args.style,
+            fit=args.fit, denoise=not args.no_denoise)
+        print(f"-> push {W}x{H}, effet {effect}, {len(frames)} frames vers SteelSeries "
+              f"({'inf' if args.loops == 0 else args.loops} boucle(s), Ctrl-C pour arreter)")
+        try:
+            sent = push_animation(frames, W, H, fps=fps, loops=args.loops,
+                                  invert=args.invert, durations=durations)
+        except PushError as exc:
+            print(f"Erreur push: {exc}", file=sys.stderr)
+            return 3
+        except KeyboardInterrupt:
+            print("\ninterrompu.")
+            return 0
+        print(f"{sent} frames envoyées.")
+        return 0
+
+    ext = EXT[args.format]
     if args.out:
         out = args.out
     elif text:
-        out = "".join(c if c.isalnum() else "_" for c in text)[:24] + ".gif"
+        out = "".join(c if c.isalnum() else "_" for c in text)[:24] + ext
     elif args.image:
-        out = os.path.splitext(os.path.basename(args.image))[0] + "_oled.gif"
+        out = os.path.splitext(os.path.basename(args.image))[0] + "_oled" + ext
     else:
-        out = f"{effect}.gif"
+        out = f"{effect}{ext}"
     out, effect, W, H, n, duration = make_gif(
         text, out, preset=args.preset, size=args.size, effect=effect, fps=fps,
         seconds=seconds, speed=args.speed, font_path=args.font,
         font_size=args.font_size, charset=charset, invert=args.invert,
         scale=args.scale, seed=args.seed, image=args.image,
         style="solid" if args.no_dither else args.style, fit=args.fit,
-        denoise=not args.no_denoise)
-    print(f"{out}  —  {W}x{H}, effet {effect}, {n} frames @ {duration} ms")
+        denoise=not args.no_denoise, fmt=args.format)
+    unit = "frames" if args.format == "gif" else f"frame(s) -> {args.format}"
+    print(f"{out}  —  {W}x{H}, effet {effect}, {n} {unit} @ {duration} ms")
     return 0
 
 
