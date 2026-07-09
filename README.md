@@ -1,203 +1,206 @@
 # oled-gif-studio
 
+*[Lire en français](README.fr.md)*
+
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/hero.gif" width="384" alt="OLED GIF STUDIO qui défile sur un écran 128x40">
+  <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/hero.gif" width="384" alt="OLED GIF STUDIO scrolling on a 128x40 screen">
 </p>
 
-Générateur de GIFs animés **1 bit** pour les petits écrans OLED : claviers/souris
-SteelSeries, modules SSD1306/SH1106 (Arduino, Raspberry Pi, macropads QMK)...
+**1-bit** animated GIF generator for small OLED screens: SteelSeries
+keyboards/mice, SSD1306/SH1106 modules (Arduino, Raspberry Pi, QMK
+macropads)...
 
-Pas de modèle IA, pas d'API payante : tout est **procédural** (Python + Pillow),
-donc instantané, gratuit et pixel-perfect. Un mode « description en langage
-naturel » (français ou anglais) choisit l'effet et les paramètres pour toi.
+No AI model, no paid API: everything is **procedural** (Python + Pillow), so
+it's instant, free, and pixel-perfect. A "natural language description" mode
+(French or English) picks the effect and parameters for you.
 
-> Tous les aperçus de ce README sont agrandis ×3 — la taille réelle des GIFs
-> est celle de l'écran cible (128×40 par défaut).
+> All previews in this README are scaled ×3 — the actual GIF size is that of
+> the target screen (128×40 by default).
 
 ## Installation
 
-Aucune, si Python (≥ 3.10) + Pillow sont déjà installés. Sinon :
+None needed if Python (≥ 3.10) + Pillow are already installed. Otherwise:
 
 ```
 pip install Pillow
 ```
 
-Optionnel, pour avoir la commande `oledgif` partout :
+Optional, to get the `oledgif` command available everywhere:
 
 ```
 pip install -e .
 ```
 
-## Usage rapide
+## Quick usage
 
 ```powershell
-# Depuis le dossier du projet :
-python -m oledgif "HELLO WORLD"                          # effet auto → hello.gif
-python -m oledgif "GG" -e slot -o gg.gif                 # machine à sous
-python -m oledgif "PWNED" -e glitch -p rival             # pour l'OLED d'une souris
-python -m oledgif "42" -e matrix --size 128x64 --fps 20  # taille custom
+# From the project folder:
+python -m oledgif "HELLO WORLD"                          # auto effect → hello.gif
+python -m oledgif "GG" -e slot -o gg.gif                 # slot machine
+python -m oledgif "PWNED" -e glitch -p rival             # for a mouse's OLED
+python -m oledgif "42" -e matrix --size 128x64 --fps 20  # custom size
 
-# En langage naturel :
-python -m oledgif -d "le texte 'BONJOUR' défile lentement"
-python -m oledgif -d "'GAME OVER' qui clignote vite pendant 3s"
-python -m oledgif -d "un radar qui balaie l'écran"
+# In natural language:
+python -m oledgif -d "the text 'HELLO' scrolling slowly"
+python -m oledgif -d "'GAME OVER' blinking fast for 3s"
+python -m oledgif -d "a radar sweeping the screen"
 
-# À partir d'une image :
-python -m oledgif -i photo.jpg --fit cover               # photo plein écran, effet vhs
-python -m oledgif -i comic.jpg --fit cover --style comic # illustration/BD
-python -m oledgif -i logo.png -e bounce                  # le logo rebondit
-python -m oledgif -i meme.gif                            # GIF animé converti tel quel
+# From an image:
+python -m oledgif -i photo.jpg --fit cover               # full-screen photo, vhs effect
+python -m oledgif -i comic.jpg --fit cover --style comic # illustration/comic
+python -m oledgif -i logo.png -e bounce                  # the logo bounces
+python -m oledgif -i meme.gif                            # animated GIF converted as-is
 
-# Motifs sans texte (écrans de veille) :
+# Text-free patterns (screensavers):
 python -m oledgif -e starfield
 python -m oledgif -e plasma --seconds 6
 
-# Un exemple de chaque effet dans ./samples :
+# One example of every effect in ./samples:
 python -m oledgif --demo
 ```
 
-## Effets texte / image (`--list-effects`)
+## Text / image effects (`--list-effects`)
 
 <table>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/scroll.gif" alt="scroll"><br><code>scroll</code> — défilement en boucle parfaite</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/typewriter.gif" alt="typewriter"><br><code>typewriter</code> — machine à écrire avec curseur</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/scroll.gif" alt="scroll"><br><code>scroll</code> — perfectly looping scroll</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/typewriter.gif" alt="typewriter"><br><code>typewriter</code> — typewriter with cursor</td>
 </tr>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/wave.gif" alt="wave"><br><code>wave</code> — lettres en vague</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/blink.gif" alt="blink"><br><code>blink</code> — clignotement</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/wave.gif" alt="wave"><br><code>wave</code> — letters waving</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/blink.gif" alt="blink"><br><code>blink</code> — blinking</td>
 </tr>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/bounce.gif" alt="bounce"><br><code>bounce</code> — rebond façon logo DVD</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/matrix.gif" alt="matrix"><br><code>matrix</code> — pluie de caractères qui révèle le texte</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/bounce.gif" alt="bounce"><br><code>bounce</code> — DVD-logo-style bounce</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/matrix.gif" alt="matrix"><br><code>matrix</code> — character rain revealing the text</td>
 </tr>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/slot.gif" alt="slot"><br><code>slot</code> — chaque lettre cycle puis se fige</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/glitch.gif" alt="glitch"><br><code>glitch</code> — bandes décalées + bruit</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/slot.gif" alt="slot"><br><code>slot</code> — each letter cycles then locks in</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/glitch.gif" alt="glitch"><br><code>glitch</code> — shifted bands + noise</td>
 </tr>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/pulse.gif" alt="pulse"><br><code>pulse</code> — battement de cœur</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/vhs.gif" alt="vhs"><br><code>vhs</code> — tracking façon cassette vidéo</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/pulse.gif" alt="pulse"><br><code>pulse</code> — heartbeat</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/vhs.gif" alt="vhs"><br><code>vhs</code> — VHS tape tracking look</td>
 </tr>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/slide.gif" alt="slide"><br><code>slide</code> — générique bas → haut</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/slide.gif" alt="slide"><br><code>slide</code> — bottom-to-top credits crawl</td>
 <td></td>
 </tr>
 </table>
 
-`typewriter`, `wave`, `matrix` et `slot` sont réservés au texte ; les autres
-acceptent aussi une image (`--image`).
+`typewriter`, `wave`, `matrix`, and `slot` are text-only; the others also
+accept an image (`--image`).
 
-`--effect auto` (défaut) : `scroll` si le texte est trop large pour l'écran,
-sinon `wave` ; `vhs` pour une image ; conversion directe pour un GIF animé.
+`--effect auto` (default): `scroll` if the text is too wide for the screen,
+otherwise `wave`; `vhs` for an image; direct conversion for an animated GIF.
 
-## Motifs sans texte (écrans de veille)
+## Text-free patterns (screensavers)
 
 <table>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/starfield.gif" alt="starfield"><br><code>starfield</code> — hyperespace</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/plasma.gif" alt="plasma"><br><code>plasma</code> — plasma rétro tramé</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/starfield.gif" alt="starfield"><br><code>starfield</code> — hyperspace</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/plasma.gif" alt="plasma"><br><code>plasma</code> — retro dithered plasma</td>
 </tr>
 <tr>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/life.gif" alt="life"><br><code>life</code> — jeu de la vie de Conway</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/eq.gif" alt="eq"><br><code>eq</code> — égaliseur audio</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/life.gif" alt="life"><br><code>life</code> — Conway's Game of Life</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/eq.gif" alt="eq"><br><code>eq</code> — audio equalizer</td>
 </tr>
 <tr>
 <td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/scope.gif" alt="scope"><br><code>scope</code> — oscilloscope</td>
-<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/radar.gif" alt="radar"><br><code>radar</code> — balayage avec échos</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/radar.gif" alt="radar"><br><code>radar</code> — sweep with echoes</td>
 </tr>
 </table>
 
-## Images : les 4 styles de rendu
+## Images: the 4 rendering styles
 
-Convertir une image couleur en 1 bit sur 5120 pixels est un exercice de
-sacrifice — le bon `--style` dépend de la source. Démonstration sur la même
-scène (lune, silhouettes sur ciel en dégradé, lumières de ville) :
+Converting a color image to 1 bit over 5120 pixels is an exercise in
+sacrifice — the right `--style` depends on the source. Demonstrated on the
+same scene (moon, silhouettes against a gradient sky, city lights):
 
-| Rendu | Style |
+| Render | Style |
 |---|---|
-| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_source.png" alt="source" width="288"> | **Source** (niveaux de gris) |
-| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_photo.png" alt="photo" width="288"> | `--style photo` (défaut) — auto-contraste + netteté + trame Floyd-Steinberg. Le bon choix pour les **photos réelles** : la trame simule les niveaux de gris. Sur une illustration, elle devient du bruit. |
-| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_solid.png" alt="solid" width="288"> | `--style solid` — seuillage net (alias `--no-dither`). Parfait pour les **logos** et dessins au trait… mais tout ce qui est sombre-sur-sombre disparaît dans le noir. |
-| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_comic.png" alt="comic" width="288"> | `--style comic` — comme `solid`, mais un 2ᵉ seuil automatique (Otsu) sépare les tons sombres et retrace en **contour blanc** les formes noyées dans le noir. Idéal pour les **illustrations/BD**. |
-| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_edges.png" alt="edges" width="288"> | `--style edges` — détection de contours, traits blancs sur fond noir. Look néon/filaire, souvent le plus lisible pour un **paysage ou un visage**. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_source.png" alt="source" width="288"> | **Source** (grayscale) |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_photo.png" alt="photo" width="288"> | `--style photo` (default) — auto-contrast + sharpening + Floyd-Steinberg dithering. The right choice for **real photos**: the dithering simulates grayscale levels. On an illustration it turns into noise. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_solid.png" alt="solid" width="288"> | `--style solid` — hard thresholding (alias `--no-dither`). Great for **logos** and line art… but anything dark-on-dark disappears into black. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_comic.png" alt="comic" width="288"> | `--style comic` — like `solid`, but an automatic 2nd threshold (Otsu) separates dark tones and outlines shapes drowned in black with a **white contour**. Ideal for **illustrations/comics**. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_edges.png" alt="edges" width="288"> | `--style edges` — edge detection, white lines on black background. Neon/wireframe look, often the most readable for a **landscape or a face**. |
 
-Autres options d'image :
+Other image options:
 
-- `--fit cover` — l'image remplit tout l'écran (recadrée) au lieu d'être
-  réduite à un timbre-poste au milieu. Recommandé pour les photos paysage.
-- **Dé-bruitage** (actif par défaut) : un filtre médian + une suppression des
-  pixels isolés éliminent le « poivre et sel » (reflets, lampadaires, étoiles).
-  `--no-denoise` le désactive si tu veux justement garder ces points.
-- Un **GIF animé** en entrée est converti frame par frame en conservant les
-  durées d'origine (avec `--effect auto`).
+- `--fit cover` — the image fills the whole screen (cropped) instead of being
+  shrunk to a stamp in the middle. Recommended for landscape photos.
+- **Denoising** (on by default): a median filter plus isolated-pixel removal
+  eliminate "salt and pepper" noise (reflections, streetlights, stars).
+  `--no-denoise` disables it if you actually want to keep those specks.
+- An **animated GIF** input is converted frame by frame, keeping the
+  original durations (with `--effect auto`).
 
-## Langage naturel (`--describe`)
+## Natural language (`--describe`)
 
 ```powershell
-python -m oledgif -d "le texte 'BRB' qui rebondit pendant 5 secondes"
-python -m oledgif -d "'REC' en mode vhs vintage"
-python -m oledgif -d "a fast blinking 'GO' for 3 seconds"
+python -m oledgif -d "the text 'BRB' bouncing for 5 seconds"
+python -m oledgif -d "'REC' in vintage vhs mode"
+python -m oledgif -d "un radar qui balaie l'écran"
 ```
 
-Le parseur (FR/EN, insensible aux accents) reconnaît l'effet par mots-clés
-(« défile », « clignote », « tape », « radar », « vintage »…), le texte entre
-guillemets, la durée (« pendant 3s ») et la vitesse (« lentement », « vite »).
+The parser (FR/EN, accent-insensitive) recognizes the effect by keywords
+("scrolls", "blinks", "types", "radar", "vintage"...), the text in quotes,
+the duration ("for 3s"), and the speed ("slowly", "fast").
 
-## Écrans préconfigurés (`--list-presets`)
+## Preconfigured screens (`--list-presets`)
 
-| Preset        | Taille  | Matériel |
+| Preset        | Size    | Hardware |
 |---------------|---------|----------|
-| `apex` (défaut) | 128×40 | SteelSeries Apex 5 / 7 / Pro (OLED clavier) |
-| `rival`       | 128×36  | SteelSeries Rival 700 / 710 (OLED souris) |
+| `apex` (default) | 128×40 | SteelSeries Apex 5 / 7 / Pro (keyboard OLED) |
+| `rival`       | 128×36  | SteelSeries Rival 700 / 710 (mouse OLED) |
 | `oled-128x64` | 128×64  | SSD1306 / SH1106 / SSD1309 |
 | `oled-128x32` | 128×32  | SSD1306 |
 | `oled-96x16`  | 96×16   | SSD1306 |
 | `oled-256x64` | 256×64  | SSD1322 |
 
-N'importe quelle autre taille : `--size LARGEURxHAUTEUR`.
+Any other size: `--size WIDTHxHEIGHT`.
 
-## Options utiles
+## Useful options
 
-- `--charset alnum|digits|upper|letters|ascii` ou une chaîne littérale — le
-  jeu de caractères utilisé par `matrix` et `slot` (défaut : les 62
-  alphanumériques `0-9A-Za-z`).
-- `--font chemin.ttf --font-size N` — police custom (défaut : Consolas,
-  taille ajustée à l'écran).
-- `--invert` — noir sur blanc.
-- `--scale 4` — GIF agrandi ×4 (pour prévisualiser confortablement).
-- `--seed 42` — rendu reproductible pour les effets aléatoires.
-- `--fps`, `--seconds`, `--speed` (px/s pour scroll).
+- `--charset alnum|digits|upper|letters|ascii` or a literal string — the
+  character set used by `matrix` and `slot` (default: the 62 alphanumeric
+  characters `0-9A-Za-z`).
+- `--font path.ttf --font-size N` — custom font (default: Consolas, size
+  adjusted to the screen).
+- `--invert` — black on white.
+- `--scale 4` — GIF enlarged ×4 (for comfortable previewing).
+- `--seed 42` — reproducible rendering for random effects.
+- `--fps`, `--seconds`, `--speed` (px/s for scroll).
 
-## Envoyer le GIF sur l'écran SteelSeries
+## Sending the GIF to a SteelSeries screen
 
-Deux options :
+Two options:
 
-1. **SteelSeries GG** : dans les réglages de ton clavier (section OLED),
-   tu peux importer une image/GIF 128×40 — les GIFs générés ici sont au bon
-   format (1 bit, taille exacte).
-2. **GameSense API** (programmatique) : comme le fait
-   [SteelseriesAnimGif](https://github.com/bolner/SteelseriesAnimGif), on peut
-   streamer les frames vers l'écran via l'API locale de SteelSeries GG.
-   Les GIFs produits ici sont directement exploitables frame par frame.
+1. **SteelSeries GG**: in your keyboard's settings (OLED section), you can
+   import a 128×40 image/GIF — the GIFs generated here are already in the
+   right format (1 bit, exact size).
+2. **GameSense API** (programmatic): like
+   [SteelseriesAnimGif](https://github.com/bolner/SteelseriesAnimGif) does,
+   you can stream frames to the screen via SteelSeries GG's local API. The
+   GIFs produced here are directly usable frame by frame.
 
-## Structure du projet
+## Project structure
 
 ```
 oledgif/
-  cli.py        # ligne de commande + make_gif()
-  effects.py    # les 11 effets texte/image (registre @effect)
-  patterns.py   # les 6 motifs sans texte
-  render.py     # préparation d'images, binarisation, écriture GIF
-  describe.py   # parseur langage naturel FR/EN
-  presets.py    # tailles d'écrans du marché
-  fonts.py      # chargement de police
-samples/        # un GIF d'exemple par effet (taille réelle, --demo)
-docs/           # illustrations du README (agrandies ×3)
+  cli.py        # command line + make_gif()
+  effects.py    # the 11 text/image effects (@effect registry)
+  patterns.py   # the 6 text-free patterns
+  render.py     # image prep, binarization, GIF writing
+  describe.py   # FR/EN natural language parser
+  presets.py    # market screen sizes
+  fonts.py      # font loading
+samples/        # one example GIF per effect (actual size, --demo)
+docs/           # README illustrations (scaled ×3)
 ```
 --- 
-## Mon choix
+## My pick
 
 <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/keyboard.jpg" alt="source" width="288">
 
-Ninja Turtles !
+Ninja Turtles!
