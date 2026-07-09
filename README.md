@@ -1,7 +1,7 @@
 # oled-gif-studio
 
 <p align="center">
-  <img src="docs/hero.gif" width="384" alt="OLED GIF STUDIO qui défile sur un écran 128x40">
+  <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/hero.gif" width="384" alt="OLED GIF STUDIO qui défile sur un écran 128x40">
 </p>
 
 Générateur de GIFs animés **1 bit** pour les petits écrans OLED : claviers/souris
@@ -60,27 +60,27 @@ python -m oledgif --demo
 
 <table>
 <tr>
-<td align="center"><img src="docs/scroll.gif" alt="scroll"><br><code>scroll</code> — défilement en boucle parfaite</td>
-<td align="center"><img src="docs/typewriter.gif" alt="typewriter"><br><code>typewriter</code> — machine à écrire avec curseur</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/scroll.gif" alt="scroll"><br><code>scroll</code> — défilement en boucle parfaite</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/typewriter.gif" alt="typewriter"><br><code>typewriter</code> — machine à écrire avec curseur</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/wave.gif" alt="wave"><br><code>wave</code> — lettres en vague</td>
-<td align="center"><img src="docs/blink.gif" alt="blink"><br><code>blink</code> — clignotement</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/wave.gif" alt="wave"><br><code>wave</code> — lettres en vague</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/blink.gif" alt="blink"><br><code>blink</code> — clignotement</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/bounce.gif" alt="bounce"><br><code>bounce</code> — rebond façon logo DVD</td>
-<td align="center"><img src="docs/matrix.gif" alt="matrix"><br><code>matrix</code> — pluie de caractères qui révèle le texte</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/bounce.gif" alt="bounce"><br><code>bounce</code> — rebond façon logo DVD</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/matrix.gif" alt="matrix"><br><code>matrix</code> — pluie de caractères qui révèle le texte</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/slot.gif" alt="slot"><br><code>slot</code> — chaque lettre cycle puis se fige</td>
-<td align="center"><img src="docs/glitch.gif" alt="glitch"><br><code>glitch</code> — bandes décalées + bruit</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/slot.gif" alt="slot"><br><code>slot</code> — chaque lettre cycle puis se fige</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/glitch.gif" alt="glitch"><br><code>glitch</code> — bandes décalées + bruit</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/pulse.gif" alt="pulse"><br><code>pulse</code> — battement de cœur</td>
-<td align="center"><img src="docs/vhs.gif" alt="vhs"><br><code>vhs</code> — tracking façon cassette vidéo</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/pulse.gif" alt="pulse"><br><code>pulse</code> — battement de cœur</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/vhs.gif" alt="vhs"><br><code>vhs</code> — tracking façon cassette vidéo</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/slide.gif" alt="slide"><br><code>slide</code> — générique bas → haut</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/slide.gif" alt="slide"><br><code>slide</code> — générique bas → haut</td>
 <td></td>
 </tr>
 </table>
@@ -95,16 +95,16 @@ sinon `wave` ; `vhs` pour une image ; conversion directe pour un GIF animé.
 
 <table>
 <tr>
-<td align="center"><img src="docs/starfield.gif" alt="starfield"><br><code>starfield</code> — hyperespace</td>
-<td align="center"><img src="docs/plasma.gif" alt="plasma"><br><code>plasma</code> — plasma rétro tramé</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/starfield.gif" alt="starfield"><br><code>starfield</code> — hyperespace</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/plasma.gif" alt="plasma"><br><code>plasma</code> — plasma rétro tramé</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/life.gif" alt="life"><br><code>life</code> — jeu de la vie de Conway</td>
-<td align="center"><img src="docs/eq.gif" alt="eq"><br><code>eq</code> — égaliseur audio</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/life.gif" alt="life"><br><code>life</code> — jeu de la vie de Conway</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/eq.gif" alt="eq"><br><code>eq</code> — égaliseur audio</td>
 </tr>
 <tr>
-<td align="center"><img src="docs/scope.gif" alt="scope"><br><code>scope</code> — oscilloscope</td>
-<td align="center"><img src="docs/radar.gif" alt="radar"><br><code>radar</code> — balayage avec échos</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/scope.gif" alt="scope"><br><code>scope</code> — oscilloscope</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/radar.gif" alt="radar"><br><code>radar</code> — balayage avec échos</td>
 </tr>
 </table>
 
@@ -116,11 +116,11 @@ scène (lune, silhouettes sur ciel en dégradé, lumières de ville) :
 
 | Rendu | Style |
 |---|---|
-| <img src="docs/style_source.png" alt="source" width="288"> | **Source** (niveaux de gris) |
-| <img src="docs/style_photo.png" alt="photo" width="288"> | `--style photo` (défaut) — auto-contraste + netteté + trame Floyd-Steinberg. Le bon choix pour les **photos réelles** : la trame simule les niveaux de gris. Sur une illustration, elle devient du bruit. |
-| <img src="docs/style_solid.png" alt="solid" width="288"> | `--style solid` — seuillage net (alias `--no-dither`). Parfait pour les **logos** et dessins au trait… mais tout ce qui est sombre-sur-sombre disparaît dans le noir. |
-| <img src="docs/style_comic.png" alt="comic" width="288"> | `--style comic` — comme `solid`, mais un 2ᵉ seuil automatique (Otsu) sépare les tons sombres et retrace en **contour blanc** les formes noyées dans le noir. Idéal pour les **illustrations/BD**. |
-| <img src="docs/style_edges.png" alt="edges" width="288"> | `--style edges` — détection de contours, traits blancs sur fond noir. Look néon/filaire, souvent le plus lisible pour un **paysage ou un visage**. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_source.png" alt="source" width="288"> | **Source** (niveaux de gris) |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_photo.png" alt="photo" width="288"> | `--style photo` (défaut) — auto-contraste + netteté + trame Floyd-Steinberg. Le bon choix pour les **photos réelles** : la trame simule les niveaux de gris. Sur une illustration, elle devient du bruit. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_solid.png" alt="solid" width="288"> | `--style solid` — seuillage net (alias `--no-dither`). Parfait pour les **logos** et dessins au trait… mais tout ce qui est sombre-sur-sombre disparaît dans le noir. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_comic.png" alt="comic" width="288"> | `--style comic` — comme `solid`, mais un 2ᵉ seuil automatique (Otsu) sépare les tons sombres et retrace en **contour blanc** les formes noyées dans le noir. Idéal pour les **illustrations/BD**. |
+| <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/style_edges.png" alt="edges" width="288"> | `--style edges` — détection de contours, traits blancs sur fond noir. Look néon/filaire, souvent le plus lisible pour un **paysage ou un visage**. |
 
 Autres options d'image :
 
@@ -198,6 +198,6 @@ docs/           # illustrations du README (agrandies ×3)
 --- 
 ## Mon choix
 
-<img src="docs/keyboard.jpg" alt="source" width="288">
+<img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/keyboard.jpg" alt="source" width="288">
 
 Ninja Turtles !
