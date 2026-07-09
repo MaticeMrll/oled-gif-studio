@@ -1,6 +1,6 @@
 # oled-gif-studio
 
-*[Lire en français](README.fr.md)*
+*[Lire en français](https://github.com/MaticeMrll/oled-gif-studio/blob/main/README.fr.md)*
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/hero.gif" width="384" alt="OLED GIF STUDIO scrolling on a 128x40 screen">
