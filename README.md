@@ -84,6 +84,23 @@ python -m oledgif "GG WP" -e slot --push --loops 3
 python -m oledgif --demo
 ```
 
+## Web interface
+
+Prefer clicking to typing? A local web UI exposes **everything** the CLI can do —
+every effect and pattern, natural-language describe, image import, any screen
+size, C-array/XBM export, and live push to a SteelSeries OLED — with a realistic
+OLED preview that updates as you tweak the controls.
+
+```powershell
+python -m oledgif.web        # starts a local server and opens your browser
+# or, once installed:  oledgif-web
+```
+
+It runs **100% locally** with **zero extra dependencies** (Python's standard
+library only — no Flask, no CDN, nothing leaves your machine). Add `--no-browser`
+to skip auto-opening, or `--port 9000` to pick a port. Live push still needs
+SteelSeries GG running and `requests` (`pip install oledgifstudio[push]`).
+
 ## Text / image effects (`--list-effects`)
 
 <table>
@@ -271,6 +288,7 @@ oledgif/
   describe.py   # FR/EN natural language parser
   presets.py    # market screen sizes
   fonts.py      # font loading
+  web/          # local web UI (stdlib http.server + vanilla JS SPA)
 tests/          # pytest suite
 samples/        # one example GIF per effect (actual size, --demo)
 docs/           # README illustrations (scaled ×3)

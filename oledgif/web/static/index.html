@@ -1,0 +1,226 @@
+<title>OLED GIF Studio</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Générateur de GIFs 1-bit pour écrans OLED (SteelSeries, SSD1306...)">
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/app.js" defer></script>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">OLED<span class="accent">GIF</span> Studio</span>
+    </div>
+    <div class="topbar-sub">générateur de GIFs 1-bit pour écrans OLED</div>
+  </header>
+
+  <main class="layout">
+
+    <!-- ============================== COLONNE GAUCHE : CONTRÔLES ============================== -->
+    <section class="controls" aria-label="Contrôles">
+
+      <!-- ---------- Contenu ---------- -->
+      <fieldset class="panel">
+        <legend>Contenu</legend>
+
+        <div class="tabs" role="tablist" aria-label="Source du contenu">
+          <button type="button" id="tab-text" class="tab is-active" role="tab" aria-selected="true" aria-controls="panel-text">Texte</button>
+          <button type="button" id="tab-describe" class="tab" role="tab" aria-selected="false" aria-controls="panel-describe">Décrire</button>
+        </div>
+
+        <div id="panel-text" class="tab-panel" role="tabpanel">
+          <label for="text">Texte à afficher</label>
+          <input type="text" id="text" name="text" placeholder="GG" maxlength="64" autocomplete="off">
+        </div>
+
+        <div id="panel-describe" class="tab-panel is-hidden" role="tabpanel">
+          <label for="describe">Décrire en langage naturel</label>
+          <input type="text" id="describe" name="describe" placeholder="GG qui clignote vite" maxlength="200" autocomplete="off">
+        </div>
+
+        <div class="field-group">
+          <label id="dropzone-label">Image (optionnel)</label>
+          <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-labelledby="dropzone-label" aria-describedby="dropzone-hint">
+            <div id="dropzone-empty" class="dropzone-empty">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5M8 9l4-4 4 4M12 5v11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <p id="dropzone-hint">Glissez une image ici ou</p>
+              <button type="button" id="btn-browse" class="btn btn-ghost btn-sm">Parcourir…</button>
+              <input type="file" id="image-file" accept="image/*" class="visually-hidden">
+            </div>
+            <div id="dropzone-filled" class="dropzone-filled is-hidden">
+              <img id="image-thumb" alt="Aperçu de l'image chargée">
+              <div class="dropzone-filled-info">
+                <span id="image-filename" class="mono small"></span>
+                <button type="button" id="btn-remove-image" class="btn btn-ghost btn-sm">Retirer l'image</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="image-options" class="field-row is-hidden">
+          <div class="field">
+            <label for="style">Style</label>
+            <select id="style" name="style"></select>
+          </div>
+          <div class="field">
+            <label for="fit">Cadrage</label>
+            <select id="fit" name="fit"></select>
+          </div>
+          <div class="field field-checkbox">
+            <input type="checkbox" id="denoise" name="denoise" checked>
+            <label for="denoise">Débruitage</label>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- ---------- Écran ---------- -->
+      <fieldset class="panel">
+        <legend>Écran</legend>
+
+        <div class="field">
+          <label for="preset">Preset</label>
+          <select id="preset" name="preset"></select>
+        </div>
+
+        <div class="field field-checkbox">
+          <input type="checkbox" id="custom-size-toggle">
+          <label for="custom-size-toggle">Taille personnalisée</label>
+        </div>
+
+        <div id="custom-size-fields" class="field-row is-hidden">
+          <div class="field">
+            <label for="size-w">Largeur</label>
+            <input type="number" id="size-w" min="8" max="512" value="128" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="size-h">Hauteur</label>
+            <input type="number" id="size-h" min="8" max="512" value="40" inputmode="numeric">
+          </div>
+        </div>
+
+        <div class="field field-checkbox">
+          <input type="checkbox" id="invert">
+          <label for="invert">Inverser (noir sur blanc)</label>
+        </div>
+      </fieldset>
+
+      <!-- ---------- Animation ---------- -->
+      <fieldset class="panel">
+        <legend>Animation</legend>
+
+        <div class="field">
+          <label for="effect">Effet</label>
+          <select id="effect" name="effect"></select>
+          <p id="effect-desc" class="hint"></p>
+        </div>
+
+        <div class="field">
+          <label for="fps">Images/s <output id="fps-val" for="fps">15</output></label>
+          <input type="range" id="fps" min="5" max="30" step="1" value="15">
+        </div>
+
+        <div class="field">
+          <label for="seconds">Durée <output id="seconds-val" for="seconds">4 s</output></label>
+          <input type="range" id="seconds" min="1" max="10" step="1" value="4">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="speed">Vitesse (px/s)</label>
+            <input type="number" id="speed" placeholder="auto" min="1">
+          </div>
+          <div class="field">
+            <label for="seed">Seed</label>
+            <input type="number" id="seed" placeholder="aléatoire">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="font-size">Taille police</label>
+            <input type="number" id="font-size" placeholder="auto" min="4">
+          </div>
+          <div class="field">
+            <label for="charset">Jeu de caractères</label>
+            <select id="charset" name="charset"></select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="scale">Zoom d'aperçu <output id="scale-val" for="scale">4×</output></label>
+          <input type="range" id="scale" min="1" max="6" step="1" value="4">
+        </div>
+      </fieldset>
+
+      <!-- ---------- Sortie ---------- -->
+      <fieldset class="panel">
+        <legend>Sortie</legend>
+
+        <div class="output-actions">
+          <button type="button" id="btn-generate" class="btn btn-primary">Générer</button>
+          <div class="field-checkbox field-checkbox-inline">
+            <input type="checkbox" id="auto-preview" checked>
+            <label for="auto-preview">Aperçu auto</label>
+          </div>
+        </div>
+
+        <div class="output-actions output-actions-secondary">
+          <button type="button" id="btn-download" class="btn btn-ghost" disabled>Télécharger GIF</button>
+          <button type="button" id="btn-export-c" class="btn btn-ghost" disabled>Export C-array (.h)</button>
+          <button type="button" id="btn-export-xbm" class="btn btn-ghost" disabled>Export XBM (.xbm)</button>
+        </div>
+      </fieldset>
+
+      <!-- ---------- Push SteelSeries ---------- -->
+      <fieldset class="panel panel-push">
+        <legend>Push SteelSeries</legend>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="loops">Boucles (0 = infini)</label>
+            <input type="number" id="loops" min="0" value="0">
+          </div>
+        </div>
+
+        <div class="output-actions">
+          <button type="button" id="btn-push" class="btn btn-push">Push</button>
+          <button type="button" id="btn-push-stop" class="btn btn-ghost" disabled>Stop</button>
+        </div>
+
+        <div id="push-status" class="push-status" aria-live="polite">
+          <span class="push-status-dot" id="push-status-dot" aria-hidden="true"></span>
+          <span id="push-status-text">Inactif.</span>
+        </div>
+      </fieldset>
+
+    </section>
+
+    <!-- ============================== COLONNE DROITE : APERÇU ============================== -->
+    <section class="preview" aria-label="Aperçu de l'écran OLED">
+      <div class="scene">
+        <div class="bezel">
+          <div class="bezel-cam" aria-hidden="true"></div>
+          <div id="screen-wrap" class="screen-wrap">
+            <img id="screen-img" alt="Aperçu du GIF sur l'écran OLED">
+            <div id="screen-empty" class="screen-empty">écran éteint</div>
+            <div id="screen-loading" class="screen-loading is-hidden" aria-hidden="true">
+              <span class="spinner"></span>
+            </div>
+          </div>
+          <div class="bezel-brand" aria-hidden="true">OLED</div>
+        </div>
+      </div>
+      <p id="info-line" class="info-line mono">—</p>
+      <p id="generate-error" class="error-line" role="alert"></p>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <span>oledgif · local · aucune donnée envoyée hors de cette machine</span>
+  </footer>
+
+</div>
