@@ -3,11 +3,29 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "oledgif"
+name = "oledgifstudio"
 version = "0.1.0"
 description = "Générateur de GIFs animés 1 bit pour écrans OLED (SteelSeries, SSD1306, ...)"
+readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.10"
+authors = [
+    { name = "MaticeMrll", email = "marill.matice@gmail.com" },
+]
+keywords = ["oled", "gif", "steelseries", "ssd1306", "keyboard", "pillow"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Graphics",
+    "Environment :: Console",
+]
 dependencies = ["Pillow>=9.0"]
+
+[project.urls]
+Homepage = "https://github.com/MaticeMrll/oled-gif-studio"
+Repository = "https://github.com/MaticeMrll/oled-gif-studio"
+Issues = "https://github.com/MaticeMrll/oled-gif-studio/issues"
 
 [project.scripts]
 oledgif = "oledgif.cli:main"
