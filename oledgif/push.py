@@ -72,10 +72,15 @@ def _screen_handler(w, h, image_data):
 
 
 def push_animation(frames, w, h, fps=15, loops=0, invert=False,
-                   durations=None, address=None):
+                   durations=None, address=None, should_stop=None):
     """Joue l'animation sur l'écran du périphérique.
 
     loops=0 => boucle jusqu'à Ctrl-C. Retourne le nombre de frames envoyées.
+
+    `should_stop` : callable optionnel renvoyant bool, vérifié en tête de
+    chaque boucle et à chaque itération de frame — permet d'interrompre
+    proprement un push (loops=0 notamment) depuis un autre thread (le
+    `finally` fait toujours `remove_game`).
     """
     try:
         import requests
@@ -108,7 +113,13 @@ def push_animation(frames, w, h, fps=15, loops=0, invert=False,
     try:
         loop = 0
         while loops == 0 or loop < loops:
+            if should_stop is not None and should_stop():
+                break
+            stopped = False
             for i, data in enumerate(packed):
+                if should_stop is not None and should_stop():
+                    stopped = True
+                    break
                 post("/bind_game_event", {
                     "game": GAME_ID, "event": "FRAME",
                     "min_value": 0, "max_value": 100, "icon_id": 0,
@@ -120,6 +131,8 @@ def push_animation(frames, w, h, fps=15, loops=0, invert=False,
                 })
                 sent += 1
                 time.sleep(delays[i])
+            if stopped:
+                break
             loop += 1
     finally:
         try:

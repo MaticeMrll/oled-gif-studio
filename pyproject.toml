@@ -34,6 +34,10 @@ Issues = "https://github.com/MaticeMrll/oled-gif-studio/issues"
 
 [project.scripts]
 oledgif = "oledgif.cli:main"
+oledgif-web = "oledgif.web.__main__:main"
 
 [tool.setuptools]
-packages = ["oledgif"]
+packages = ["oledgif", "oledgif.web"]
+
+[tool.setuptools.package-data]
+"oledgif.web" = ["static/*.html", "static/*.css", "static/*.js"]
