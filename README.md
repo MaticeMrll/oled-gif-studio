@@ -195,3 +195,9 @@ oledgif/
 samples/        # un GIF d'exemple par effet (taille réelle, --demo)
 docs/           # illustrations du README (agrandies ×3)
 ```
+--- 
+## Mon choix
+
+<img src="docs/keyboard.jpg" alt="source" width="288">
+
+Ninja Turtles !
