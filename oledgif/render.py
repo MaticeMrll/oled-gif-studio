@@ -1,6 +1,13 @@
 """Rendu bas niveau : texte/image -> bitmap, binarisation 1 bit, écriture GIF."""
 
+import os
+
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps, ImageSequence
+
+try:  # numpy accélère nettement despeckle/plasma ; fallback pur Python sinon
+    import numpy as np
+except ImportError:  # pragma: no cover
+    np = None
 
 THRESHOLD = 128
 
@@ -47,6 +54,8 @@ def _despeckle(im: Image.Image) -> Image.Image:
     sans toucher à la trame Floyd-Steinberg, dont les pixels ont toujours
     des voisins diagonaux de même couleur.
     """
+    if np is not None:
+        return _despeckle_np(im)
     w, h = im.size
     px = im.load()
     out = im.copy()
@@ -68,6 +77,24 @@ def _despeckle(im: Image.Image) -> Image.Image:
             if alone:
                 po[x, y] = 255 - v
     return out
+
+
+def _despeckle_np(im: Image.Image) -> Image.Image:
+    """Équivalent vectorisé de `_despeckle` (voir docstring). ~50x plus rapide."""
+    a = np.asarray(im, dtype=np.int16)
+    # bord rembourré avec un sentinelle (-1) qui n'égale jamais 0/255
+    p = np.pad(a, 1, constant_values=-1)
+    h, w = a.shape
+    same = np.zeros((h, w), dtype=bool)
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            if dx == 0 and dy == 0:
+                continue
+            same |= p[1 + dy:1 + dy + h, 1 + dx:1 + dx + w] == a
+    out = a.copy()
+    alone = ~same
+    out[alone] = 255 - out[alone]
+    return Image.fromarray(out.astype("uint8"), "L")
 
 
 def _otsu(hist) -> int | None:
@@ -191,6 +218,11 @@ def save_gif(frames, path: str, fps: int, invert: bool = False, scale: int = 1,
 
     `durations` (liste de ms par frame) prime sur `fps` — utile en conversion.
     """
+    if not frames:
+        raise ValueError("aucune frame à écrire (l'effet n'a rien produit)")
+    d = os.path.dirname(path)
+    if d:
+        os.makedirs(d, exist_ok=True)
     out = []
     for f in frames:
         b = binarize(f, invert)

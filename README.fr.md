@@ -6,12 +6,20 @@
   <img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/hero.gif" width="384" alt="OLED GIF STUDIO qui défile sur un écran 128x40">
 </p>
 
-Générateur de GIFs animés **1 bit** pour les petits écrans OLED : claviers/souris
-SteelSeries, modules SSD1306/SH1106 (Arduino, Raspberry Pi, macropads QMK)...
+Générateur de GIFs animés **1 bit** pour les écrans OLED **de toutes tailles** :
+claviers/souris SteelSeries, modules SSD1306/SH1106 (Arduino, Raspberry Pi,
+macropads QMK), ou n'importe quelle résolution custom. Choisis un preset ou fixe
+ta propre taille `LARGEURxHAUTEUR` — tout le pipeline est indépendant de la
+résolution, d'une barrette 96×16 à un panneau 256×64.
 
 Pas de modèle IA, pas d'API payante : tout est **procédural** (Python + Pillow),
 donc instantané, gratuit et pixel-perfect. Un mode « description en langage
 naturel » (français ou anglais) choisit l'effet et les paramètres pour toi.
+
+Tu peux aussi **exporter les frames en tableau C** (`--format c-array`) pour les
+flasher sur un SSD1306 Arduino/QMK, ou les **envoyer en direct** sur un écran
+OLED SteelSeries (`--push`). `pip install oledgifstudio[fast]` ajoute NumPy pour
+accélérer nettement les effets lourds (optionnel — fallback pur Python sinon).
 
 > Tous les aperçus de ce README sont agrandis ×3 — la taille réelle des GIFs
 > est celle de l'écran cible (128×40 par défaut).
@@ -29,6 +37,10 @@ Optionnel, pour avoir la commande `oledgif` partout :
 ```
 pip install -e .
 ```
+
+Extras optionnels : `pip install -e .[fast]` (NumPy — accélère `plasma`,
+`tunnel`, le tramage d'images) et `pip install -e .[push]` (`requests` — requis
+pour `--push`). `.[dev]` installe tout, plus `pytest`.
 
 ## Usage rapide
 
@@ -53,6 +65,21 @@ python -m oledgif -i meme.gif                            # GIF animé converti t
 # Motifs sans texte (écrans de veille) :
 python -m oledgif -e starfield
 python -m oledgif -e plasma --seconds 6
+python -m oledgif -e fire                                # flammes qui montent
+python -m oledgif -e tunnel                              # tunnel en damier
+python -m oledgif -e clock                               # horloge numérique
+
+# N'importe quelle résolution — pas seulement les presets :
+python -m oledgif "HELLO" --size 200x64
+python -m oledgif "HI" -e wave --size 100x24
+
+# Export pour microcontrôleur (Arduino / QMK / SSD1306) :
+python -m oledgif "GG" -e blink -f c-array -o logo.h     # header C, drawBitmap()
+python -m oledgif -i logo.png -f xbm -o logo.xbm         # X BitMap
+
+# Push direct sur un OLED SteelSeries (GameSense, en live) :
+python -m oledgif -e clock --push                        # boucle jusqu'à Ctrl-C
+python -m oledgif "GG WP" -e slot --push --loops 3
 
 # Un exemple de chaque effet dans ./samples :
 python -m oledgif --demo
@@ -107,6 +134,18 @@ sinon `wave` ; `vhs` pour une image ; conversion directe pour un GIF animé.
 <tr>
 <td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/scope.gif" alt="scope"><br><code>scope</code> — oscilloscope</td>
 <td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/radar.gif" alt="radar"><br><code>radar</code> — balayage avec échos</td>
+</tr>
+<tr>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/fire.gif" alt="fire"><br><code>fire</code> — flammes tramées qui montent</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/snow.gif" alt="snow"><br><code>snow</code> — neige qui tombe et s'accumule</td>
+</tr>
+<tr>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/fireworks.gif" alt="fireworks"><br><code>fireworks</code> — fusées qui explosent en gerbes</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/spiral.gif" alt="spiral"><br><code>spiral</code> — spirale hypnotique en rotation</td>
+</tr>
+<tr>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/tunnel.gif" alt="tunnel"><br><code>tunnel</code> — tunnel damier en profondeur</td>
+<td align="center"><img src="https://raw.githubusercontent.com/MaticeMrll/oled-gif-studio/main/docs/clock.gif" alt="clock"><br><code>clock</code> — horloge numérique qui égrène</td>
 </tr>
 </table>
 
@@ -170,30 +209,72 @@ N'importe quelle autre taille : `--size LARGEURxHAUTEUR`.
 - `--scale 4` — GIF agrandi ×4 (pour prévisualiser confortablement).
 - `--seed 42` — rendu reproductible pour les effets aléatoires.
 - `--fps`, `--seconds`, `--speed` (px/s pour scroll).
+- `--format gif|c-array|xbm` — type de sortie (voir la section export).
+- `--push [--loops N]` — envoi en direct sur un OLED SteelSeries au lieu d'un fichier.
 
-## Envoyer le GIF sur l'écran SteelSeries
+## Export pour microcontrôleur (`--format c-array` / `xbm`)
 
-Deux options :
+Au-delà du GIF, tu peux exporter les frames en code source pour les afficher sur
+un OLED nu (SSD1306/SH1106) piloté par un Arduino, un ESP32 ou un clavier QMK :
 
-1. **SteelSeries GG** : dans les réglages de ton clavier (section OLED),
-   tu peux importer une image/GIF 128×40 — les GIFs générés ici sont au bon
-   format (1 bit, taille exacte).
-2. **GameSense API** (programmatique) : comme le fait
-   [SteelseriesAnimGif](https://github.com/bolner/SteelseriesAnimGif), on peut
-   streamer les frames vers l'écran via l'API locale de SteelSeries GG.
-   Les GIFs produits ici sont directement exploitables frame par frame.
+```powershell
+python -m oledgif "GG" -e blink -p oled-128x32 -f c-array -o logo.h
+python -m oledgif -i logo.png -f xbm -o logo.xbm
+```
+
+- **`c-array`** → un header C avec `const uint8_t frames[N][octets] PROGMEM`
+  (1 bit/pixel, packing horizontal, MSB en tête — la convention Adafruit_GFX /
+  U8g2). Il émet aussi `_WIDTH`, `_HEIGHT`, `_FRAMES` et une table
+  `_durations[]`. Il suffit de l'inclure et d'animer :
+
+  ```cpp
+  #include "logo.h"
+  for (uint8_t i = 0; i < GG_FRAMES; i++) {
+      display.clearDisplay();
+      display.drawBitmap(0, 0, gg_frames[i], GG_WIDTH, GG_HEIGHT, 1);
+      display.display();
+      delay(gg_durations[i]);
+  }
+  ```
+
+- **`xbm`** → un X BitMap standard (1re frame), lisible par la plupart des outils.
+
+## Envoyer l'animation sur un écran SteelSeries
+
+Trois options, de la plus simple à la plus manuelle :
+
+1. **Push en direct (`--push`)** — envoie l'animation directement sur l'OLED du
+   clavier/souris via l'API GameSense locale de SteelSeries GG, sans fichier :
+
+   ```powershell
+   python -m oledgif -e clock --push            # boucle jusqu'à Ctrl-C
+   python -m oledgif "GG WP" -e slot --push --loops 3
+   ```
+
+   SteelSeries GG doit tourner. L'adresse du serveur est auto-détectée depuis
+   `coreProps.json` ; force-la via la variable d'environnement
+   `OLEDGIF_GAMESENSE_ADDRESS` au besoin. Nécessite `requests`
+   (`pip install oledgifstudio[push]`).
+2. **Import SteelSeries GG** : dans les réglages OLED de ton périphérique,
+   importe le GIF généré — il est déjà en 1 bit à la taille exacte de l'écran.
+3. **GameSense API** (ton propre code) : les frames sont directement
+   exploitables octet par octet, comme
+   [SteelseriesAnimGif](https://github.com/bolner/SteelseriesAnimGif).
 
 ## Structure du projet
 
 ```
 oledgif/
-  cli.py        # ligne de commande + make_gif()
+  cli.py        # ligne de commande + build_frames() / make_gif()
   effects.py    # les 11 effets texte/image (registre @effect)
-  patterns.py   # les 6 motifs sans texte
-  render.py     # préparation d'images, binarisation, écriture GIF
+  patterns.py   # les 12 motifs/écrans de veille sans texte
+  render.py     # préparation d'images, binarisation, écriture GIF (chemins NumPy)
+  export.py     # export C-array / XBM pour microcontrôleur
+  push.py       # push en direct sur un OLED SteelSeries (API GameSense)
   describe.py   # parseur langage naturel FR/EN
   presets.py    # tailles d'écrans du marché
   fonts.py      # chargement de police
+tests/          # suite pytest
 samples/        # un GIF d'exemple par effet (taille réelle, --demo)
 docs/           # illustrations du README (agrandies ×3)
 ```

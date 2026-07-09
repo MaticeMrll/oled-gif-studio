@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oledgifstudio"
-version = "0.1.2"
+version = "0.2.0"
 description = "Générateur de GIFs animés 1 bit pour écrans OLED (SteelSeries, SSD1306, ...)"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -21,6 +21,11 @@ classifiers = [
     "Environment :: Console",
 ]
 dependencies = ["Pillow>=9.0"]
+
+[project.optional-dependencies]
+fast = ["numpy>=1.21"]   # accélère plasma/despeckle et l'export ; fallback pur Python sinon
+push = ["requests>=2.25"]  # push direct vers l'OLED SteelSeries (API GameSense)
+dev = ["numpy>=1.21", "requests>=2.25", "pytest>=7.0"]
 
 [project.urls]
 Homepage = "https://github.com/MaticeMrll/oled-gif-studio"
